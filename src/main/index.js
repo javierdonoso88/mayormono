@@ -170,6 +170,22 @@ function initAnthropic(settings) {
   }
 }
 
+// ─── History trimmer ─────────────────────────────────────────────────────────
+
+function trimHistory(messages) {
+  // Keep last 10 user/assistant pairs; replace old tool results with a summary
+  const MAX_PAIRS = 10
+  const pairs = []
+  for (let i = 0; i < messages.length; i++) {
+    if (messages[i].role === 'user' && !Array.isArray(messages[i].content)) {
+      pairs.push(i)
+    }
+  }
+  if (pairs.length <= MAX_PAIRS) return messages
+  const cutoff = pairs[pairs.length - MAX_PAIRS]
+  return messages.slice(cutoff)
+}
+
 // ─── MCP init ────────────────────────────────────────────────────────────────
 
 async function initMCP() {
@@ -355,7 +371,7 @@ Fecha y hora actual: ${new Date().toLocaleString('es-ES', { timeZone: 'Europe/Ma
 
       if (response.stop_reason !== 'tool_use' || toolUseBlocks.length === 0) {
         workingMessages.push({ role: 'assistant', content: response.content })
-        conversationHistory = workingMessages
+        conversationHistory = trimHistory(workingMessages)
         break
       }
 
@@ -367,9 +383,13 @@ Fecha y hora actual: ${new Date().toLocaleString('es-ES', { timeZone: 'Europe/Ma
         mainWindow.webContents.send('mm:stream-tool-use', { type: 'calling', name: toolUse.name })
         try {
           const result = await mcpClient.callTool(toolUse.name, toolUse.input)
-          const resultText = Array.isArray(result.content)
+          let resultText = Array.isArray(result.content)
             ? result.content.map((c) => c.text || JSON.stringify(c)).join('\n')
             : JSON.stringify(result)
+          const MAX_TOOL_CHARS = 8000
+          if (resultText.length > MAX_TOOL_CHARS) {
+            resultText = resultText.slice(0, MAX_TOOL_CHARS) + '\n\n[Resultado truncado por longitud]'
+          }
           toolResults.push({ type: 'tool_result', tool_use_id: toolUse.id, content: resultText })
           mainWindow.webContents.send('mm:stream-tool-use', { type: 'done', name: toolUse.name })
         } catch (e) {
