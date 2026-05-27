@@ -1,7 +1,7 @@
 {
-  "name": "paco-asistente",
+  "name": "mayormono",
   "version": "1.0.0",
-  "description": "Paco el Asistente - Tu asistente personal para Mac",
+  "description": "Mayormono - Tu asistente personal para Mac",
   "main": "out/main/index.js",
   "author": "Javier Donoso",
   "license": "MIT",
@@ -12,8 +12,8 @@
     "dist": "npm run build && ELECTRON_RUN_AS_NODE= electron-builder --mac dmg"
   },
   "build": {
-    "appId": "com.javierdonoso.paco-asistente",
-    "productName": "Paco el Asistente",
+    "appId": "com.javierdonoso.mayormono",
+    "productName": "Mayormono",
     "copyright": "Copyright © 2026 Javier Donoso",
     "directories": {
       "output": "release"
