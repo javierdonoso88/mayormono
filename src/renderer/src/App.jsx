@@ -83,13 +83,14 @@ function ToolBadge({ name }) {
 
 // ─── Onboarding ───────────────────────────────────────────────────────────────
 
-function Onboarding({ onComplete }) {
-  const [step, setStep] = useState(0)
+function Onboarding({ onComplete, initialStep = 0, initialForm = {} }) {
+  const [step, setStep] = useState(initialStep)
   const [form, setForm] = useState({
     userName: '',
     apiKey: '',
     baseURL: 'http://localhost:6655/anthropic',
-    model: 'claude-sonnet-4-5'
+    model: 'claude-sonnet-4-5',
+    ...initialForm
   })
   const [authState, setAuthState] = useState('idle') // idle | loading | done | error
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -233,6 +234,7 @@ export default function App() {
   const [settings, setSettings] = useState({ userName: '', model: 'claude-sonnet-4-5' })
   const [showSettings, setShowSettings] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [onboardingInitialStep, setOnboardingInitialStep] = useState(0)
   const [m365User, setM365User] = useState(null)
   const [tools, setTools] = useState([])
   const [streamText, setStreamText] = useState('')
@@ -284,8 +286,13 @@ export default function App() {
 
     window.mayormonoAPI.onToolsUpdated(setTools)
 
+    window.mayormonoAPI.onShowOnboarding(() => {
+      setOnboardingInitialStep(2)
+      setShowOnboarding(true)
+    })
+
     return () => {
-      ;['mm:stream-chunk', 'mm:stream-tool-use', 'mm:stream-done', 'mm:stream-error', 'mm:tools-updated'].forEach(
+      ;['mm:stream-chunk', 'mm:stream-tool-use', 'mm:stream-done', 'mm:stream-error', 'mm:tools-updated', 'mm:show-onboarding'].forEach(
         (ch) => window.mayormonoAPI.removeAllListeners(ch)
       )
     }
@@ -318,6 +325,7 @@ export default function App() {
     await window.mayormonoAPI?.saveSettings(form)
     setSettings(form)
     setShowOnboarding(false)
+    setOnboardingInitialStep(0)
   }
 
   const saveSettings = async (s) => {
@@ -330,7 +338,7 @@ export default function App() {
 
   return (
     <div className="app">
-      {showOnboarding && <Onboarding onComplete={completeOnboarding} />}
+      {showOnboarding && <Onboarding onComplete={completeOnboarding} initialStep={onboardingInitialStep} initialForm={settings} />}
 
       {showSettings && (
         <SettingsModal settings={settings} onSave={saveSettings} onClose={() => setShowSettings(false)} />

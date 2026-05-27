@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('mayormonoAPI', {
   onStreamDone: (cb) => ipcRenderer.on('mm:stream-done', (_, d) => cb(d)),
   onStreamError: (cb) => ipcRenderer.on('mm:stream-error', (_, d) => cb(d)),
   onToolsUpdated: (cb) => ipcRenderer.on('mm:tools-updated', (_, d) => cb(d)),
+  onShowOnboarding: (cb) => ipcRenderer.on('mm:show-onboarding', () => cb()),
 
   removeAllListeners: (ch) => ipcRenderer.removeAllListeners(ch)
 })

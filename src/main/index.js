@@ -199,6 +199,13 @@ async function initMCP() {
   } catch (e) {
     console.warn('[MCP] Not available:', e.message)
     mcpTools = []
+    try {
+      const s = loadSettings()
+      if (s.m365Configured) {
+        saveSettings({ ...s, m365Configured: false })
+      }
+    } catch (_) {}
+    mainWindow?.webContents.send('mm:show-onboarding')
   }
 }
 
