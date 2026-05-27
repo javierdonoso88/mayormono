@@ -239,7 +239,7 @@ export default function App() {
       <div className={`header ${hasMessages ? 'header-compact' : ''}`}>
         <div className="topbar">
           <div className="topbar-spacer" /> {/* traffic lights space */}
-          <span className="app-title">el mayormono</span>
+          <span className="app-title">Mayormono</span>
           <div className="topbar-actions">
             {hasMessages && (
               <button className="icon-btn" onClick={clearChat} title="Nueva conversación">
@@ -321,7 +321,7 @@ export default function App() {
           <textarea
             ref={inputRef}
             className="chat-input"
-            placeholder="Escríbele al mayormono…"
+            placeholder="Escríbele a Mayormono…"
             value={inputText}
             rows={1}
             disabled={isLoading}
@@ -341,7 +341,7 @@ export default function App() {
             <SendIcon />
           </button>
         </div>
-        <p className="disclaimer">el mayormono usa IA. Verifica los resultados.</p>
+        <p className="disclaimer">Mayormono usa IA. Verifica los resultados.</p>
       </div>
     </div>
   )
