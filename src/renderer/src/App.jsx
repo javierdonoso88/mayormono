@@ -91,7 +91,6 @@ function Onboarding({ onComplete }) {
     baseURL: 'http://localhost:6655/anthropic',
     model: 'claude-sonnet-4-5'
   })
-  const [showAdvanced, setShowAdvanced] = useState(false)
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
   const canContinue = step === 0 ? form.userName.trim() : form.apiKey.trim()
@@ -133,21 +132,6 @@ function Onboarding({ onComplete }) {
               onKeyDown={(e) => e.key === 'Enter' && canContinue && next()}
               autoFocus
             />
-            <button className="onboarding-advanced-toggle" onClick={() => setShowAdvanced(v => !v)}>
-              {showAdvanced ? '▾' : '▸'} Opciones avanzadas
-            </button>
-            {showAdvanced && (
-              <div className="onboarding-advanced">
-                <label className="field">
-                  <span>Base URL</span>
-                  <input value={form.baseURL} onChange={set('baseURL')} />
-                </label>
-                <label className="field">
-                  <span>Modelo</span>
-                  <input value={form.model} onChange={set('model')} />
-                </label>
-              </div>
-            )}
           </>
         )}
 
