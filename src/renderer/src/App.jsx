@@ -363,7 +363,16 @@ export default function App() {
       voiceTranscriptRef.current = transcript
       setInputText(transcript)
     }
-    r.onerror = () => { setIsListening(false); setInputText(''); voiceTranscriptRef.current = '' }
+    r.onerror = (e) => {
+      setIsListening(false)
+      voiceTranscriptRef.current = ''
+      if (e.error === 'not-allowed') {
+        alert('Sin acceso al micrófono.\n\nVe a Ajustes del Sistema → Privacidad y Seguridad → Micrófono y activa Mayormono.')
+      } else if (e.error === 'network') {
+        alert('Error de red en el reconocimiento de voz. Comprueba tu conexión a internet.')
+      }
+      console.error('[Voice] error:', e.error)
+    }
     r.onend = () => {
       setIsListening(false)
       const text = voiceTranscriptRef.current.trim()
