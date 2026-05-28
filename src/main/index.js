@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, session } = require('electron')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
@@ -257,6 +257,9 @@ function createWindow() {
 // ─── Lifecycle ───────────────────────────────────────────────────────────────
 
 app.whenReady().then(async () => {
+  session.defaultSession.setPermissionRequestHandler((_wc, permission, callback) => {
+    callback(permission === 'media')
+  })
   createWindow()
   const settings = loadSettings()
   initAnthropic(settings)

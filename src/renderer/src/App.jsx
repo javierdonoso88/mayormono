@@ -54,6 +54,17 @@ function TrashIcon() {
   )
 }
 
+function MicIcon() {
+  return (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+      <line x1="12" y1="19" x2="12" y2="23" />
+      <line x1="8" y1="23" x2="16" y2="23" />
+    </svg>
+  )
+}
+
 // ─── Message component ────────────────────────────────────────────────────────
 
 function Message({ msg }) {
@@ -243,6 +254,10 @@ export default function App() {
 
   const bottomRef = useRef(null)
   const streamRef = useRef('')
+  const recognitionRef = useRef(null)
+  const sendMessageRef = useRef(null)
+
+  const [isListening, setIsListening] = useState(false)
 
   useEffect(() => {
     if (!window.mayormonoAPI) return
@@ -322,6 +337,39 @@ export default function App() {
     },
     [isLoading]
   )
+
+  useEffect(() => { sendMessageRef.current = sendMessage }, [sendMessage])
+
+  const toggleVoice = useCallback(() => {
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+      return
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SR) return
+    const r = new SR()
+    r.lang = 'es-ES'
+    r.continuous = false
+    r.interimResults = true
+    r.onstart = () => setIsListening(true)
+    r.onresult = (e) => {
+      let interim = '', final = ''
+      for (const result of e.results) {
+        if (result.isFinal) final += result[0].transcript
+        else interim += result[0].transcript
+      }
+      setInputText(final || interim)
+      if (final) {
+        setIsListening(false)
+        sendMessageRef.current?.(final.trim())
+      }
+    }
+    r.onerror = () => { setIsListening(false); setInputText('') }
+    r.onend = () => setIsListening(false)
+    recognitionRef.current = r
+    r.start()
+  }, [isListening])
 
   const clearChat = async () => {
     await window.mayormonoAPI?.clearChat()
@@ -453,7 +501,7 @@ export default function App() {
         <div className="input-wrap">
           <textarea
             className="chat-input"
-            placeholder="Escríbele a Mayormono…"
+            placeholder={isListening ? 'Escuchando…' : 'Escríbele a Mayormono…'}
             value={inputText}
             rows={1}
             disabled={isLoading}
@@ -465,6 +513,14 @@ export default function App() {
               }
             }}
           />
+          <button
+            className={`mic-btn${isListening ? ' listening' : ''}`}
+            disabled={isLoading}
+            onClick={toggleVoice}
+            title={isListening ? 'Detener grabación' : 'Hablar'}
+          >
+            <MicIcon />
+          </button>
           <button
             className="send-btn"
             disabled={!inputText.trim() || isLoading}
