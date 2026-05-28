@@ -340,10 +340,12 @@ ipcMain.handle('mm:send-message', async (_event, text) => {
     input_schema: t.inputSchema || { type: 'object', properties: {} }
   }))
 
+  const m365Available = tools.length > 0
   const systemPrompt = `Eres Mayormono, el asistente personal de ${settings.userName || 'Javier'}. \
 Eres amigable, eficiente y siempre hablas en español. \
-Tienes acceso a las herramientas de Microsoft 365. Úsalas siempre que el usuario pregunte sobre su agenda, correos, tareas o Teams. \
 Sé conciso y directo. Usa emojis cuando sea apropiado.
+
+${m365Available ? `Tienes acceso a las herramientas de Microsoft 365. Úsalas siempre que el usuario pregunte sobre su agenda, correos, tareas o Teams.
 
 REGLAS DE USO DE HERRAMIENTAS:
 
@@ -370,7 +372,11 @@ OneDrive (onedrive_list_files, onedrive_search, onedrive_recent_files, onedrive_
 Contactos (contacts_list, contacts_search):
 - No tienen URL directa; muestra nombre, email y empresa.
 
-IMPORTANTE: Nunca inventes URLs. Solo incluye enlaces cuando la herramienta los devuelva explícitamente.
+IMPORTANTE: Nunca inventes URLs. Solo incluye enlaces cuando la herramienta los devuelva explícitamente.` : `ATENCIÓN: En este momento NO tienes conexión con Microsoft 365 (herramientas no disponibles).
+REGLA ABSOLUTA: Si el usuario pregunta sobre su calendario, correos, reuniones, tareas o Teams, responde ÚNICAMENTE con este mensaje exacto:
+"⚠️ No tengo acceso a Microsoft 365 ahora mismo. Por favor reconecta desde Configuración (⚙️)."
+NUNCA inventes, supongas ni generes datos ficticios de calendarios, correos, tareas o chats. Esto incluye ejemplos, datos de prueba o respuestas "de demostración".`}
+
 Fecha y hora actual: ${new Date().toLocaleString('es-ES', { timeZone: 'Europe/Madrid' })}.`
 
   let workingMessages = [...conversationHistory]

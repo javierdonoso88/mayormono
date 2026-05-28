@@ -344,6 +344,14 @@ export default function App() {
         <SettingsModal settings={settings} onSave={saveSettings} onClose={() => setShowSettings(false)} />
       )}
 
+      {/* ── M365 disconnected banner ──────────────────────── */}
+      {!showOnboarding && tools.length === 0 && (
+        <div className="m365-banner">
+          <span>⚠️ Microsoft 365 desconectado</span>
+          <button onClick={() => { setOnboardingInitialStep(2); setShowOnboarding(true) }}>Reconectar</button>
+        </div>
+      )}
+
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className={`header ${hasMessages ? 'header-compact' : ''}`}>
         <div className="topbar">

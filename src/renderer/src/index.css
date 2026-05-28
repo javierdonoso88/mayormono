@@ -549,6 +549,33 @@ html, body, #root { height: 100%; overflow: hidden; }
   box-shadow: 0 4px 14px rgba(109,40,217,0.5);
 }
 
+/* ── M365 disconnected banner ─────────────────────────── */
+.m365-banner {
+  background: rgba(239,68,68,0.15);
+  border-bottom: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  font-size: 13px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  -webkit-app-region: drag;
+}
+.m365-banner button {
+  -webkit-app-region: no-drag;
+  background: rgba(239,68,68,0.25);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: #fca5a5;
+  font-size: 12px;
+  font-family: inherit;
+  padding: 3px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.m365-banner button:hover { background: rgba(239,68,68,0.4); }
+
 /* ── msg-text whitespace ──────────────────────────────── */
 .msg-text {
   white-space: pre-wrap;
