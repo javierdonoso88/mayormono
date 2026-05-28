@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('mayormonoAPI', {
   saveSettings: (s) => ipcRenderer.invoke('mm:save-settings', s),
   clearChat: () => ipcRenderer.invoke('mm:clear-chat'),
   getTools: () => ipcRenderer.invoke('mm:get-tools'),
+  getMcpStatus: () => ipcRenderer.invoke('mm:get-mcp-status'),
   authM365: () => ipcRenderer.invoke('mm:auth-m365'),
   getM365User: () => ipcRenderer.invoke('mm:get-m365-user'),
 

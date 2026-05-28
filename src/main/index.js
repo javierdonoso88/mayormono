@@ -131,6 +131,7 @@ let mcpClient = null
 let conversationHistory = []
 let anthropicClient = null
 let mcpTools = []
+let mcpStatus = 'connecting' // 'connecting' | 'connected' | 'disconnected'
 
 // ─── Settings ────────────────────────────────────────────────────────────────
 
@@ -190,15 +191,18 @@ function trimHistory(messages) {
 
 async function initMCP() {
   if (mcpClient) { mcpClient.disconnect(); mcpClient = null }
+  mcpStatus = 'connecting'
   try {
     mcpClient = new MCPClient()
     const tools = await mcpClient.connect(getBundledBin('microsoft-365-mcp'))
     mcpTools = tools
+    mcpStatus = 'connected'
     console.log(`[MCP] Connected — ${tools.length} tools`)
     mainWindow?.webContents.send('mm:tools-updated', tools.map((t) => t.name))
   } catch (e) {
     console.warn('[MCP] Not available:', e.message)
     mcpTools = []
+    mcpStatus = 'disconnected'
     try {
       const s = loadSettings()
       if (s.m365Configured) {
@@ -271,6 +275,8 @@ app.on('activate', () => {
 // ─── IPC ─────────────────────────────────────────────────────────────────────
 
 ipcMain.handle('mm:get-settings', () => loadSettings())
+
+ipcMain.handle('mm:get-mcp-status', () => mcpStatus)
 
 ipcMain.handle('mm:save-settings', (_, settings) => {
   saveSettings(settings)

@@ -237,6 +237,7 @@ export default function App() {
   const [onboardingInitialStep, setOnboardingInitialStep] = useState(0)
   const [m365User, setM365User] = useState(null)
   const [tools, setTools] = useState([])
+  const [mcpStatus, setMcpStatus] = useState('connecting') // 'connecting'|'connected'|'disconnected'
   const [streamText, setStreamText] = useState('')
   const [toolStatus, setToolStatus] = useState('')
 
@@ -251,7 +252,12 @@ export default function App() {
       if (s.firstRun) setShowOnboarding(true)
       else if (!s.apiKey) setShowSettings(true)
     })
-    window.mayormonoAPI.getTools().then(setTools)
+    window.mayormonoAPI.getTools().then((t) => {
+      setTools(t)
+      if (t.length > 0) setMcpStatus('connected')
+      // If empty, wait for mm:tools-updated or mm:show-onboarding to resolve
+    })
+    window.mayormonoAPI.getMcpStatus().then((s) => setMcpStatus(s))
     window.mayormonoAPI.getM365User().then((u) => { if (u) setM365User(u) })
 
     window.mayormonoAPI.onStreamChunk((chunk) => {
@@ -283,9 +289,13 @@ export default function App() {
       setIsLoading(false)
     })
 
-    window.mayormonoAPI.onToolsUpdated(setTools)
+    window.mayormonoAPI.onToolsUpdated((t) => {
+      setTools(t)
+      setMcpStatus(t.length > 0 ? 'connected' : 'disconnected')
+    })
 
     window.mayormonoAPI.onShowOnboarding(() => {
+      setMcpStatus('disconnected')
       setOnboardingInitialStep(2)
       setShowOnboarding(true)
     })
@@ -325,6 +335,7 @@ export default function App() {
     setSettings(form)
     setShowOnboarding(false)
     setOnboardingInitialStep(0)
+    setMcpStatus('connecting')
   }
 
   const saveSettings = async (s) => {
@@ -344,7 +355,7 @@ export default function App() {
       )}
 
       {/* ── M365 disconnected banner ──────────────────────── */}
-      {!showOnboarding && tools.length === 0 && (
+      {!showOnboarding && mcpStatus === 'disconnected' && (
         <div className="m365-banner">
           <span>⚠️ Microsoft 365 desconectado</span>
           <button onClick={() => { setOnboardingInitialStep(2); setShowOnboarding(true) }}>Reconectar</button>
