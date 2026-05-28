@@ -183,10 +183,10 @@ function Onboarding({ onComplete, initialStep = 0, initialForm = {} }) {
 
 function SettingsModal({ settings, onSave, onClose }) {
   const [form, setForm] = useState({
-    userName: settings.userName || 'Javier',
+    userName: settings.userName || '',
     apiKey: settings.apiKey || '',
-    baseURL: 'http://localhost:6655/anthropic',
-    model: 'claude-sonnet-4-5'
+    baseURL: settings.baseURL || 'http://localhost:6655/anthropic',
+    model: settings.model || 'claude-sonnet-4-5'
   })
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
@@ -241,7 +241,6 @@ export default function App() {
   const [toolStatus, setToolStatus] = useState('')
 
   const bottomRef = useRef(null)
-  const inputRef = useRef(null)
   const streamRef = useRef('')
 
   useEffect(() => {
@@ -442,7 +441,6 @@ export default function App() {
       <div className="input-area">
         <div className="input-wrap">
           <textarea
-            ref={inputRef}
             className="chat-input"
             placeholder="Escríbele a Mayormono…"
             value={inputText}
