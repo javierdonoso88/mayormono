@@ -397,8 +397,9 @@ Tareas (outlook_list_task_lists, outlook_list_tasks):
 - Las tareas de Microsoft To-Do NO tienen URL directa; no inventes enlaces.
 
 Teams (teams_list_chats, teams_get_chat, teams_list_messages, teams_search_messages):
-- Usa format='markdown' en teams_list_chats. Para obtener la webUrl de un chat usa teams_get_chat con el chatId.
-- Enlaza con [Abrir en Teams](webUrl) cuando tengas la URL.
+- Usa format='markdown' en teams_list_chats para listar los chats.
+- teams_list_chats NO devuelve webUrl. OBLIGATORIO: después de listar, llama a teams_get_chat con el chatId de cada chat relevante para obtener su webUrl.
+- SIEMPRE incluye [Abrir en Teams](webUrl) en la respuesta. Nunca presentes un chat sin su enlace.
 
 OneDrive (onedrive_list_files, onedrive_search, onedrive_recent_files, onedrive_get_file_content):
 - Los archivos incluyen webUrl; enlaza con [Abrir archivo](webUrl).
